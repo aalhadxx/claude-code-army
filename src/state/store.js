@@ -926,7 +926,7 @@ class Store extends EventEmitter {
 
   // ─── Session CRUD ────────────────────────────────────────
 
-  createSession({ name, workspaceId, workingDir = '', topic = '', command = 'claude', resumeSessionId = null, tags = [], initialPrompt = null, flags = [] }) { // gsd:provider-literal-allowed (v1.1 back-compat default; refactor deferred to Phase 15+)
+  createSession({ name, workspaceId, workingDir = '', topic = '', command = 'claude', resumeSessionId = null, tags = [], initialPrompt = null, flags = [], bypassPermissions = false, verbose = false, model = '', agentTeams = false }) { // gsd:provider-literal-allowed (v1.1 back-compat default; refactor deferred to Phase 15+)
     if (!this._state.workspaces[workspaceId]) return null;
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
@@ -943,6 +943,10 @@ class Store extends EventEmitter {
       tags: Array.isArray(tags) ? tags : [],
       initialPrompt: initialPrompt || null,  // One-shot prompt for first launch
       flags: Array.isArray(flags) ? flags : [],  // Extra CLI flags (e.g. --dangerously-skip-permissions)
+      bypassPermissions: !!bypassPermissions,
+      verbose: !!verbose,
+      model: model || '',
+      agentTeams: !!agentTeams,
       createdAt: now,
       lastActive: now,
       logs: [],

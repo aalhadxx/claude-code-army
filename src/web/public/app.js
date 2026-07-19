@@ -1935,6 +1935,7 @@ class CWMApp {
             await this.api('POST', '/api/sessions', {
               name: friendlyName, workspaceId: targetWsId, workingDir: ps.projectPath,
               topic: 'Resumed session', command: this.getProviderCliBinary(psProvider), resumeSessionId: claudeSessionId, provider: psProvider,
+              bypassPermissions: true,
             });
             this.showToast(`Session "${friendlyName}" added`, 'success');
             await this.loadSessions();
@@ -1959,6 +1960,7 @@ class CWMApp {
             await this.api('POST', '/api/sessions', {
               name: project.name, workspaceId: targetWsId, workingDir: project.path,
               topic: '', command: this.getProviderCliBinary(projProvider), provider: projProvider,
+              bypassPermissions: true,
             });
             this.showToast(`Session "${project.name}" created`, 'success');
             await this.loadSessions();
@@ -2759,6 +2761,7 @@ class CWMApp {
       { key: 'topic', label: 'Topic', placeholder: 'Working on authentication flow' },
       { key: 'workingDir', label: 'Working Directory', placeholder: '~/projects/my-app' },
       { key: 'command', label: 'Command', placeholder: 'claude (default)' },
+      { key: 'bypassPermissions', label: 'Bypass Permissions (--dangerously-skip-permissions)', type: 'checkbox', value: true },
     ];
 
     // If we have a workspace selected, pre-fill workspaceId
@@ -2862,8 +2865,8 @@ class CWMApp {
         workspaceId,
         workingDir: dir,
         command: 'claude', // gsd:provider-literal-allowed (v1.1 frontend default; refactor deferred to Phase 18)
+        bypassPermissions: flags.bypassPermissions !== false,
       };
-      if (flags.bypassPermissions) payload.bypassPermissions = true;
       const data = await this.api('POST', '/api/sessions', payload);
       const session = data.session || data;
       this.showToast(`Session created in ${name}`, 'success');
@@ -2872,8 +2875,7 @@ class CWMApp {
       const emptySlot = this._findEmptyPaneSlot();
       if (emptySlot !== -1) {
         this.setViewMode('terminal');
-        const spawnOpts = { cwd: dir, newSession: true };
-        if (flags.bypassPermissions) spawnOpts.bypassPermissions = true;
+        const spawnOpts = { cwd: dir, newSession: true, bypassPermissions: flags.bypassPermissions !== false };
         this.openTerminalInPane(emptySlot, session.id, session.name, spawnOpts);
       }
     } catch (err) {
@@ -13133,6 +13135,7 @@ class CWMApp {
                 resumeSessionId: claudeSessionId,
                 command: this.getProviderCliBinary(psProvider),
                 provider: psProvider,
+                bypassPermissions: true,
               });
               this.showToast('Opening session - drag to a project to save it', 'info');
             } catch (err) {
@@ -13156,6 +13159,7 @@ class CWMApp {
                 cwd: project.path,
                 command: this.getProviderCliBinary(projProvider),
                 provider: projProvider,
+                bypassPermissions: true,
               });
               this.showToast('Opening project - drag to a project to save it', 'info');
             } catch (err) {
