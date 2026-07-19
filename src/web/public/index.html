@@ -19,7 +19,7 @@
   <script>
     (function() {
       var t = localStorage.getItem('cwm_theme');
-      if (['latte','frappe','macchiato','cherry','ocean','amber','mint','nord','dracula','tokyo-night','rose-pine-dawn','gruvbox-light'].includes(t)) document.documentElement.dataset.theme = t;
+      if (['standard','brat','goblin-mode','vaporwave','cyber-sigilism','rat','clean-girl','cottagecore','frutiger-aero'].includes(t)) document.documentElement.dataset.theme = t;
       var s = parseFloat(localStorage.getItem('cwm_ui_scale'));
       if (s && s >= 0.85 && s <= 1.2) {
         document.documentElement.style.setProperty('--ui-scale', s);
@@ -232,20 +232,16 @@
           </button>
           <div class="theme-dropdown" id="theme-dropdown" hidden>
             <div class="theme-dropdown-section">Dark</div>
-            <button class="theme-option" data-theme="mocha"><span class="theme-swatch" style="background:#1e1e2e"></span>Mocha<span class="theme-catppuccin-badge" title="Official Catppuccin">&#9733;</span></button>
-            <button class="theme-option" data-theme="macchiato"><span class="theme-swatch" style="background:#24273a"></span>Macchiato<span class="theme-catppuccin-badge" title="Official Catppuccin">&#9733;</span></button>
-            <button class="theme-option" data-theme="frappe"><span class="theme-swatch" style="background:#303446"></span>Frapp&eacute;<span class="theme-catppuccin-badge" title="Official Catppuccin">&#9733;</span></button>
-            <button class="theme-option" data-theme="nord"><span class="theme-swatch" style="background:#2e3440"></span>Nord</button>
-            <button class="theme-option" data-theme="dracula"><span class="theme-swatch" style="background:#282a36"></span>Dracula</button>
-            <button class="theme-option" data-theme="tokyo-night"><span class="theme-swatch" style="background:#1a1b26"></span>Tokyo Night</button>
-            <button class="theme-option" data-theme="cherry"><span class="theme-swatch" style="background:linear-gradient(135deg,#221a22,#f5a0d0)"></span>Cherry</button>
-            <button class="theme-option" data-theme="ocean"><span class="theme-swatch" style="background:linear-gradient(135deg,#1a1e28,#70a8f0)"></span>Ocean</button>
-            <button class="theme-option" data-theme="amber"><span class="theme-swatch" style="background:linear-gradient(135deg,#211e1a,#f0d070)"></span>Amber</button>
-            <button class="theme-option" data-theme="mint"><span class="theme-swatch" style="background:linear-gradient(135deg,#1a2120,#78e0a0)"></span>Mint</button>
+            <button class="theme-option" data-theme="standard"><span class="theme-swatch" style="background:#0a0a0f"></span>Standard<span class="theme-catppuccin-badge" title="Accessible">&#9855;</span></button>
+            <button class="theme-option" data-theme="brat"><span class="theme-swatch" style="background:linear-gradient(135deg,#0a0f00,#b8e820)"></span>Brat</button>
+            <button class="theme-option" data-theme="goblin-mode"><span class="theme-swatch" style="background:linear-gradient(135deg,#0f140a,#78c860)"></span>Goblin Mode</button>
+            <button class="theme-option" data-theme="vaporwave"><span class="theme-swatch" style="background:linear-gradient(135deg,#0d001a,#ff80ff)"></span>Vaporwave</button>
+            <button class="theme-option" data-theme="cyber-sigilism"><span class="theme-swatch" style="background:linear-gradient(135deg,#0a0a0a,#00ff80)"></span>Cyber Sigilism</button>
+            <button class="theme-option" data-theme="rat"><span class="theme-swatch" style="background:linear-gradient(135deg,#1a1a1a,#88c000)"></span>Rat</button>
             <div class="theme-dropdown-section">Light</div>
-            <button class="theme-option" data-theme="latte"><span class="theme-swatch" style="background:#eff1f5;border:1px solid #ccd0da"></span>Latte<span class="theme-catppuccin-badge" title="Official Catppuccin">&#9733;</span></button>
-            <button class="theme-option" data-theme="rose-pine-dawn"><span class="theme-swatch" style="background:#faf4ed;border:1px solid #dfdad9"></span>Rose Pine Dawn</button>
-            <button class="theme-option" data-theme="gruvbox-light"><span class="theme-swatch" style="background:#fbf1c7;border:1px solid #d5c4a1"></span>Gruvbox Light</button>
+            <button class="theme-option" data-theme="clean-girl"><span class="theme-swatch" style="background:#f5f0e8;border:1px solid #d0c8b8"></span>Clean Girl</button>
+            <button class="theme-option" data-theme="cottagecore"><span class="theme-swatch" style="background:#f0f5e8;border:1px solid #c4ccb0"></span>Cottagecore</button>
+            <button class="theme-option" data-theme="frutiger-aero"><span class="theme-swatch" style="background:linear-gradient(135deg,#e8f0f8,#60a8e0);border:1px solid #b8d0e8"></span>Frutiger Aero</button>
           </div>
         </div>
         <button class="btn btn-ghost btn-icon btn-sm vkb-toggle-btn" id="vkb-toggle-btn" title="Disable on-screen keyboard (hardware keyboard only)" aria-pressed="false">

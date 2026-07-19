@@ -4098,7 +4098,7 @@ class CWMApp {
      ═══════════════════════════════════════════════════════════ */
 
   setTheme(themeName) {
-    if (themeName === 'mocha') {
+    if (themeName === 'standard') {
       delete document.documentElement.dataset.theme;
     } else {
       document.documentElement.dataset.theme = themeName;
@@ -4138,8 +4138,8 @@ class CWMApp {
 
   // Legacy alias for any remaining callers
   toggleTheme() {
-    const current = document.documentElement.dataset.theme || 'mocha';
-    const themes = ['mocha', 'macchiato', 'frappe', 'nord', 'dracula', 'tokyo-night', 'cherry', 'ocean', 'amber', 'mint', 'latte', 'rose-pine-dawn', 'gruvbox-light'];
+    const current = document.documentElement.dataset.theme || 'standard';
+    const themes = ['standard', 'brat', 'goblin-mode', 'vaporwave', 'cyber-sigilism', 'rat', 'clean-girl', 'cottagecore', 'frutiger-aero'];
     const next = themes[(themes.indexOf(current) + 1) % themes.length];
     this.setTheme(next);
   }
@@ -4408,7 +4408,7 @@ class CWMApp {
         description: '13 themes including Catppuccin, Nord, Dracula, Tokyo Night, and 3 light themes',
         detail: 'Click the theme icon in the header to pick from 10 dark and 3 light themes. Your preference is saved across sessions.',
         category: 'feature',
-        tags: ['theme', 'dark', 'light', 'catppuccin', 'nord', 'dracula', 'tokyo', 'rose', 'gruvbox', 'color', 'appearance'],
+        tags: ['theme', 'dark', 'light', 'standard', 'brat', 'goblin', 'vaporwave', 'cyber', 'rat', 'clean', 'cottagecore', 'frutiger', 'color', 'appearance'],
         icon: '&#127912;',
         action: () => { const btn = document.getElementById('theme-toggle-btn'); if (btn) btn.click(); },
       },
@@ -15546,7 +15546,7 @@ class CWMApp {
   _buildThemeMenuItems() {
     const dropdown = this.els.themeDropdown;
     if (!dropdown) return [];
-    const activeTheme = document.documentElement.dataset.theme || 'mocha';
+    const activeTheme = document.documentElement.dataset.theme || 'standard';
     return Array.from(dropdown.querySelectorAll('.theme-option')).map(btn => {
       const themeName = btn.dataset.theme;
       // Collect only the button's direct text nodes so the swatch and the
