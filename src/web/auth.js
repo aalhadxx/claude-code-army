@@ -81,7 +81,7 @@ function readPasswordFromFile(filePath) {
   try {
     if (fs.existsSync(filePath)) {
       const config = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      if (config.password && typeof config.password === 'string') {
+      if (typeof config.password === 'string') {
         return config.password;
       }
     }
@@ -130,7 +130,7 @@ function loadPassword() {
 
   // 2. Home directory config (~/.myrlin/config.json), persists across reinstalls
   const homePassword = readPasswordFromFile(HOME_CONFIG_FILE);
-  if (homePassword) {
+  if (homePassword !== null) {
     // Also sync to local config so it's visible in the project
     savePasswordToFile(LOCAL_CONFIG_DIR, LOCAL_CONFIG_FILE, homePassword);
     return homePassword;
@@ -138,7 +138,7 @@ function loadPassword() {
 
   // 3. Local project config (./state/config.json)
   const localPassword = readPasswordFromFile(LOCAL_CONFIG_FILE);
-  if (localPassword) {
+  if (localPassword !== null) {
     // Promote to home config for persistence across reinstalls
     savePasswordToFile(HOME_CONFIG_DIR, HOME_CONFIG_FILE, localPassword);
     return localPassword;
@@ -231,6 +231,11 @@ function extractBearerToken(headerValue) {
  * Responds with 401 if the token is missing or invalid.
  */
 function requireAuth(req, res, next) {
+  // Auth disabled when password is explicitly set to empty string
+  if (AUTH_PASSWORD === '') {
+    return next();
+  }
+
   const token = extractBearerToken(req.headers.authorization);
 
   if (!token || !activeTokens.has(token)) {
@@ -268,6 +273,13 @@ function setupAuth(app) {
    * Returns: { success: true, token: string } or { success: false, error: string }
    */
   app.post('/api/auth/login', (req, res) => {
+    // Auth disabled: return a token without checking password
+    if (AUTH_PASSWORD === '') {
+      const token = generateToken();
+      activeTokens.add(token);
+      return res.json({ success: true, token, noAuth: true });
+    }
+
     // Rate limiting
     const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
     const rateCheck = isRateLimited(clientIp);

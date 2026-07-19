@@ -8560,6 +8560,84 @@ html.activity-indicators-disabled .terminal-pane-activity {
 :root[data-theme="frutiger-aero"] .terminal-resize-handle:hover {
   background: rgba(80, 144, 208, 0.4);
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* THEME PICKER DROPDOWN                                         */
+/* ═══════════════════════════════════════════════════════════ */
+
+.theme-picker {
+  position: relative;
+}
+
+.theme-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--mantle);
+  border: 1px solid var(--surface0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  min-width: 160px;
+  padding: 4px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  color: var(--subtext1);
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+}
+
+.theme-option:hover {
+  background: var(--surface0);
+  color: var(--text);
+}
+
+.theme-option.active {
+  color: var(--mauve);
+  font-weight: 600;
+}
+
+.theme-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.theme-dropdown-section {
+  padding: 4px 12px 2px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--overlay1);
+  pointer-events: none;
+  user-select: none;
+}
+.theme-dropdown-section:not(:first-child) {
+  margin-top: 4px;
+  border-top: 1px solid var(--surface0);
+  padding-top: 6px;
+}
+.theme-catppuccin-badge {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--yellow);
+  opacity: 0.7;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    SESSION LAUNCHER MODAL
    ═══════════════════════════════════════════════════════════════ */
