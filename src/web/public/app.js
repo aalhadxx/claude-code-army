@@ -463,6 +463,7 @@ class CWMApp {
       // Sidebar resize & collapse
       sidebarResizeHandle: document.getElementById('sidebar-resize-handle'),
       sidebarCollapseBtn: document.getElementById('sidebar-collapse-btn'),
+      sidebarHoverTrigger: document.getElementById('sidebar-hover-trigger'),
 
       // Docs panel
       docsPanel: document.getElementById('docs-panel'),
@@ -821,6 +822,37 @@ class CWMApp {
     // Sidebar collapse (desktop)
     if (this.els.sidebarCollapseBtn) {
       this.els.sidebarCollapseBtn.addEventListener('click', () => this.toggleSidebarCollapse());
+    }
+
+    // Sidebar hover reveal (desktop): hover left edge trigger or sidebar itself
+    if (this.els.sidebarHoverTrigger) {
+      this.els.sidebarHoverTrigger.addEventListener('mouseenter', () => {
+        if (this.els.sidebar.classList.contains('sidebar-hidden')) {
+          this.els.sidebar.classList.add('sidebar-revealed');
+        }
+      });
+      this.els.sidebarHoverTrigger.addEventListener('mouseleave', () => {
+        if (this.els.sidebar.classList.contains('sidebar-hidden')) {
+          this._sidebarHideTimer = setTimeout(() => {
+            this.els.sidebar.classList.remove('sidebar-revealed');
+          }, 250);
+        }
+      });
+    }
+    if (this.els.sidebar) {
+      this.els.sidebar.addEventListener('mouseleave', () => {
+        if (this.els.sidebar.classList.contains('sidebar-hidden')) {
+          this._sidebarHideTimer = setTimeout(() => {
+            this.els.sidebar.classList.remove('sidebar-revealed');
+          }, 250);
+        }
+      });
+      this.els.sidebar.addEventListener('mouseenter', () => {
+        if (this._sidebarHideTimer) {
+          clearTimeout(this._sidebarHideTimer);
+          this._sidebarHideTimer = null;
+        }
+      });
     }
 
     // Sidebar resize handle (desktop drag-to-resize)
@@ -9795,8 +9827,14 @@ class CWMApp {
 
   toggleSidebarCollapse() {
     const sidebar = this.els.sidebar;
-    const isCollapsed = sidebar.classList.toggle('collapsed');
-    localStorage.setItem('cwm_sidebarCollapsed', isCollapsed ? '1' : '0');
+    const appBody = this.els.app.querySelector('.app-body');
+    const isHidden = sidebar.classList.toggle('sidebar-hidden');
+    sidebar.classList.remove('sidebar-revealed');
+    if (appBody) {
+      if (isHidden) appBody.setAttribute('data-sidebar-hidden', '');
+      else appBody.removeAttribute('data-sidebar-hidden');
+    }
+    localStorage.setItem('cwm_sidebarCollapsed', isHidden ? '1' : '0');
 
     // Trigger resize on terminal panes after animation
     setTimeout(() => {
@@ -9816,10 +9854,12 @@ class CWMApp {
       }
     }
 
-    // Restore sidebar collapse
+    // Restore sidebar hidden state
     const collapsed = localStorage.getItem('cwm_sidebarCollapsed');
+    const appBody = this.els.app.querySelector('.app-body');
     if (collapsed === '1') {
-      this.els.sidebar.classList.add('collapsed');
+      this.els.sidebar.classList.add('sidebar-hidden');
+      if (appBody) appBody.setAttribute('data-sidebar-hidden', '');
     }
   }
 
@@ -9868,7 +9908,7 @@ class CWMApp {
     const onTouchMove = (e) => { e.preventDefault(); onMove(e.touches[0].clientX); };
 
     const startResize = (clientX) => {
-      if (sidebar.classList.contains('collapsed')) return;
+      if (sidebar.classList.contains('sidebar-hidden')) return;
       isResizing = true;
       startX = clientX;
       startWidth = sidebar.getBoundingClientRect().width;

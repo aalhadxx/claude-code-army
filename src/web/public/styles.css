@@ -955,6 +955,7 @@ textarea.input {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 
@@ -968,7 +969,7 @@ textarea.input {
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-subtle);
   overflow: hidden;
-  transition: width var(--transition-normal);
+  transition: width var(--transition-normal), opacity var(--transition-normal);
   flex-shrink: 0;
 }
 
@@ -1002,26 +1003,42 @@ textarea.input {
   border-color: var(--surface2);
 }
 
-/* Collapsed sidebar */
-.sidebar.collapsed {
-  width: 48px !important;
+/* Hidden sidebar (fully collapsed for more space) */
+.sidebar-hidden {
+  width: 0 !important;
+  opacity: 0;
+  border-right: none;
+  overflow: hidden;
 }
 
-.sidebar.collapsed .sidebar-header,
-.sidebar.collapsed .sidebar-list,
-.sidebar.collapsed .sidebar-footer,
-.sidebar.collapsed .sidebar-divider,
-.sidebar.collapsed #projects-header,
-.sidebar.collapsed #projects-list {
+/* Temporarily revealed by hover */
+.sidebar-hidden.sidebar-revealed {
+  width: var(--sidebar-width) !important;
+  opacity: 1;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.sidebar-hidden .sidebar-collapse-bar {
   display: none;
 }
 
-.sidebar.collapsed .sidebar-collapse-bar {
-  padding: 8px 4px;
+.sidebar-hidden .sidebar-collapse-btn svg {
+  transform: rotate(180deg);
 }
 
-.sidebar.collapsed .sidebar-collapse-btn svg {
-  transform: rotate(180deg);
+/* Hover trigger strip on left edge */
+.sidebar-hover-trigger {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 100%;
+  z-index: 60;
+  cursor: pointer;
+}
+
+.app-body:not([data-sidebar-hidden]) .sidebar-hover-trigger {
+  display: none;
 }
 
 /* Sidebar Resize Handle */
@@ -1040,8 +1057,8 @@ textarea.input {
   background: var(--mauve);
 }
 
-/* Hide resize handle when sidebar is collapsed */
-.sidebar.collapsed + .sidebar-resize-handle {
+/* Hide resize handle when sidebar is hidden */
+.sidebar-hidden + .sidebar-resize-handle {
   display: none;
 }
 
@@ -1082,20 +1099,9 @@ textarea.input {
   flex-shrink: 0;
 }
 
-/* Collapsed sidebar: show just the icon */
-.sidebar.collapsed .sidebar-launch-btn {
-  width: 32px;
-  height: 32px;
-  margin: 8px auto 4px;
-  padding: 0;
-  justify-content: center;
-}
-
-.sidebar.collapsed .sidebar-launch-btn-label {
-  display: none;
-}
-
-.sidebar.collapsed .sidebar-view-toggle {
+/* Hidden sidebar: suppress internal content */
+.sidebar-hidden .sidebar-launch-btn,
+.sidebar-hidden .sidebar-view-toggle {
   display: none;
 }
 
