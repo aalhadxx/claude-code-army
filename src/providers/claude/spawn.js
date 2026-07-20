@@ -35,7 +35,7 @@
 'use strict';
 
 /**
- * Build a SpawnDescriptor for the Claude CLI.
+ * Build a SpawnDescriptor for the Claude CLI via ollama wrapper.
  *
  * Pure function. Does NOT touch the filesystem, the network, or any state.
  * Throws on invalid input. Returns a descriptor that pty-manager joins,
@@ -45,10 +45,10 @@
  * @param {string} init.sessionId             - Myrlin internal session id (currently unused, reserved for future flagging).
  * @param {string|null} [init.providerSessionId]  - Claude transcript UUID for `--resume`. Validated against /^[a-zA-Z0-9_-]+$/.
  * @param {string|null} [init.cwd]            - Working directory (passes through; pty-manager validates and falls back).
- * @param {boolean} [init.bypassPermissions]  - Adds `--dangerously-skip-permissions`.
+ * @param {boolean} [init.bypassPermissions]  - Adds `--dangerously-skip-permissions` after the `--` separator.
  * @param {string[]} [init.flags]             - Extra `--<flag>` tokens. Each must match /^[a-zA-Z0-9-]+$/ or it is silently dropped.
  * @param {string|null} [init.model]          - Model id, e.g. `sonnet` or `claude-3-5-haiku-latest`. Validated.
- * @param {boolean} [init.verbose]            - Adds `--verbose`.
+ * @param {boolean} [init.verbose]            - Adds `--verbose` after the `--` separator.
  * @param {string|null} [init.initialPrompt]  - First-turn prompt to append as the trailing positional arg. Single-quote-escaped.
  * @returns {{cmd: string, args: string[], cwd: (string|null), env: Object<string,(string|undefined)>}} SpawnDescriptor.
  * @throws {Error} when model fails the validation regex.
@@ -64,10 +64,8 @@ function spawnCommand({
   verbose = false,
   initialPrompt = null,
 } = {}) {
-  // The literal 'claude' below is the CLI binary name. This file lives inside
-  // src/providers/claude/, which the grep gate (Plan 14-05) skips, so the
-  // marker is defensive (extra signal for future readers) rather than required.
-  const cmd = 'claude'; // gsd:provider-literal-allowed (Claude provider CLI binary)
+  // User's exact wrapper command: ollama launch claude --model kimi-k2.6:cloud -- <claude flags>
+  const cmd = 'ollama launch claude --model kimi-k2.6:cloud';
 
   // Defense-in-depth validation. Mirrors pty-manager.js lines 284-291 verbatim
   // so any input that historically passed the SHELL_UNSAFE gate continues to
@@ -81,31 +79,31 @@ function spawnCommand({
     throw new Error('unsafe providerSessionId: ' + providerSessionId);
   }
 
-  const args = [];
+  const claudeArgs = [];
   if (providerSessionId) {
-    args.push('--resume');
-    args.push(providerSessionId);
+    claudeArgs.push('--resume');
+    claudeArgs.push(providerSessionId);
   }
   if (bypassPermissions) {
-    args.push('--dangerously-skip-permissions');
+    claudeArgs.push('--dangerously-skip-permissions');
   }
   if (verbose) {
-    args.push('--verbose');
+    claudeArgs.push('--verbose');
   }
   if (model) {
     // Single-quote the model value so shell glob characters in aliases like
     // sonnet[1m] are not expanded by bash before being passed to claude.
     // Escape pattern: ' becomes '\''  (close-quote, escaped quote, reopen-quote).
     const safeModel = "'" + model.replace(/'/g, "'\\''") + "'";
-    args.push('--model');
-    args.push(safeModel);
+    claudeArgs.push('--model');
+    claudeArgs.push(safeModel);
   }
   if (Array.isArray(flags)) {
     for (const f of flags) {
       // Silently drop malformed flag tokens (no exception). Matches the
       // v0.9.36 behavior at pty-manager.js:323-328.
       if (f && /^[a-zA-Z0-9-]+$/.test(f)) {
-        args.push('--' + f);
+        claudeArgs.push('--' + f);
       }
     }
   }
@@ -113,8 +111,12 @@ function spawnCommand({
   // Wrap in single quotes, escaping any single quotes inside the prompt.
   if (initialPrompt && typeof initialPrompt === 'string') {
     const escaped = initialPrompt.replace(/'/g, "'\\''");
-    args.push("'" + escaped + "'");
+    claudeArgs.push("'" + escaped + "'");
   }
+
+  // If there are any args destined for the inner claude process, insert the
+  // '--' separator so ollama forwards them through instead of swallowing them.
+  const args = claudeArgs.length > 0 ? ['--', ...claudeArgs] : [];
 
   // env: { CLAUDECODE: undefined } means DELETE this key from the spawn env.
   // pty-manager honors undefined values as DELETE-this-key semantics so the
