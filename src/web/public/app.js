@@ -2264,6 +2264,28 @@ class CWMApp {
       }
     }
 
+    // Try silent no-auth login first (server with empty password skips auth).
+    // This runs before any login screen is shown, so the user never sees it
+    // when password is disabled.
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: '' }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.token) {
+          this.state.token = data.token;
+          localStorage.setItem('cwm_token', data.token);
+          await this._initializeApp();
+          return; // Logged in — never show login screen
+        }
+      }
+    } catch {
+      // Network error — fall through to normal auth flow
+    }
+
     if (this.state.token) {
       const valid = await this.checkAuth();
       if (valid) {
@@ -2274,20 +2296,6 @@ class CWMApp {
         this.showLogin();
       }
     } else {
-      // Try no-auth login: if the server has auth disabled (empty password),
-      // POST /api/auth/login with any password returns a token with noAuth:true.
-      // Attempt a silent login so the user never sees the password screen.
-      try {
-        const data = await this.api('POST', '/api/auth/login', { password: '' });
-        if (data.success && data.token) {
-          this.state.token = data.token;
-          localStorage.setItem('cwm_token', data.token);
-          await this._initializeApp();
-          return;
-        }
-      } catch {
-        // Auth is enabled — fall through to login form
-      }
       this.showLogin();
     }
   }
