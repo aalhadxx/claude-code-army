@@ -128,7 +128,18 @@ function spawnCommand({
     cmd,
     args,
     cwd: cwd || null,
-    env: { CLAUDECODE: undefined },
+    env: {
+      // Scrub nested-session markers so the spawned Claude Code doesn't think
+      // it's a child of another Claude Code session. Without this, Claude Code
+      // disables transcript persistence and shows the "Transcript saving is off"
+      // warning.
+      CLAUDECODE: undefined,
+      CLAUDE_CODE_CHILD_SESSION: undefined,
+      CLAUDE_CODE_PARENT_SESSION: undefined,
+      // Force transcript persistence even when nested-session markers were set
+      // by the parent environment.
+      CLAUDE_CODE_FORCE_SESSION_PERSISTENCE: '1',
+    },
   };
 }
 

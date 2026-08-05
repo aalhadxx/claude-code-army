@@ -2815,7 +2815,7 @@ class CWMApp {
       { key: 'topic', label: 'Topic', placeholder: 'Working on authentication flow' },
       { key: 'workingDir', label: 'Working Directory', placeholder: '~/projects/my-app' },
       { key: 'command', label: 'Command', placeholder: 'claude (default)' },
-      { key: 'bypassPermissions', label: 'Bypass Permissions (--dangerously-skip-permissions)', type: 'checkbox', value: true },
+      { key: 'bypassPermissions', label: 'Bypass Permissions (--dangerously-skip-permissions)', type: 'checkbox', value: false },
     ];
 
     // If we have a workspace selected, pre-fill workspaceId
