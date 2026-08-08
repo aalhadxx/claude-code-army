@@ -5255,6 +5255,12 @@ body.cwm-dragging .sidebar-backdrop {
   border: 1px solid var(--blue); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .terminal-container { flex: 1; overflow: hidden; transition: filter 150ms ease; }
+/* Desktop: always show xterm scrollbar so users can see and grab it */
+.xterm .xterm-viewport::-webkit-scrollbar { width: 8px; }
+.xterm .xterm-viewport::-webkit-scrollbar-track { background: transparent; }
+.xterm .xterm-viewport::-webkit-scrollbar-thumb { background: var(--surface1); border-radius: 4px; }
+.xterm .xterm-viewport::-webkit-scrollbar-thumb:hover { background: var(--overlay0); }
+.xterm .xterm-viewport { scrollbar-width: thin; scrollbar-color: var(--surface1) transparent; }
 .terminal-pane-empty .terminal-container {
   display: flex; align-items: center; justify-content: center;
   border: 2px dashed var(--surface1); margin: 8px;
